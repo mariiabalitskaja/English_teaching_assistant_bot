@@ -46,8 +46,7 @@ class PhrasalVerb:
         daily_response = f"Today's phrasal verb:  {self.response.capitalize()}." \
                          f"\nClick -> /definition to get a definition;" \
                          f"\nClick -> /synonyms to get a synonyms;" \
-                         f"\nClick -> /examples to get examples." \
-                         f"\nClick -> /notify."
+                         f"\nClick -> /examples to get examples."
         update.message.reply_text(daily_response)
 
     def pv_definition(self, update: Update, context: CallbackContext):
@@ -63,35 +62,26 @@ class PhrasalVerb:
             update.message.reply_text(
                 f"Examples:\n{self.prepare[self.response][0]['examples']}")
         else:
-            update.message.reply_text(f"Sorry, no examples for today's verb")
+            update.message.reply_text(f"Sorry, no examples for getting verb.")
 
 
-chat = PhrasalVerb()
+def main():
+    chat = PhrasalVerb()
+
+    updater = Updater(bot_token, use_context=True)
+    dispatcher = updater.dispatcher
+
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(
+        CommandHandler("lets_start", chat.send_start_message))
+    dispatcher.add_handler(CommandHandler("definition", chat.pv_definition))
+    dispatcher.add_handler(CommandHandler("synonyms", chat.pv_synonyms))
+    dispatcher.add_handler(CommandHandler("examples", chat.pv_examples))
+
+    updater.start_polling()
+    updater.idle()
 
 
-def run_daily(update: Update, context: CallbackContext):
-    updater.bot.send_message(chat_id=update.message.chat_id, text="Test")
-
-
-def daily_job(update: Update, context: CallbackContext):
-    updater.bot.send_message(chat_id=update.message.chat_id,
-                             text="Setting a daily notifications!")
-    updater.job_queue.run_daily(run_daily,
-                                time=datetime.time(20, 49, 00),
-                                days=(0, 1, 2, 3, 4, 5, 6),
-                                context=update.message.chat_id)
-
-
-updater = Updater(bot_token, use_context=True)
-dispatcher = updater.dispatcher
-
-dispatcher.add_handler(CommandHandler("start", start))
-dispatcher.add_handler(CommandHandler("help", help_command))
-dispatcher.add_handler(CommandHandler("lets_start", chat.send_start_message))
-dispatcher.add_handler(CommandHandler("definition", chat.pv_definition))
-dispatcher.add_handler(CommandHandler("synonyms", chat.pv_synonyms))
-dispatcher.add_handler(CommandHandler("examples", chat.pv_examples))
-dispatcher.add_handler(CommandHandler('notify', daily_job, pass_job_queue=True))
-
-updater.start_polling()
-updater.idle()
+if __name__ == "__main__":
+    main()
