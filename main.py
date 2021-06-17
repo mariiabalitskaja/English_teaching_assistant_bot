@@ -32,6 +32,7 @@ class PhrasalVerb:
     def __init__(self):
         with open("phrasal_verbs.json", "r") as pv_file:
             verbs = json.load(pv_file)
+        pv_file.close()
 
         self.prepare = {str(f"{verb['verb']} {verb['prep']}"): [
             {'definition': str(verb['definition']),
